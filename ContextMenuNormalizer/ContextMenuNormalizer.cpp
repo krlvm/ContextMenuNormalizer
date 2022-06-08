@@ -2,9 +2,11 @@
 #include <Uxtheme.h>
 #include <vsstyle.h>
 #include <vssym32.h>
+#include <sysinfoapi.h>
 
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "uxtheme.lib")
+#pragma warning(disable : 4996)
 
 #if _DEBUG
 #include <iostream>
@@ -132,6 +134,15 @@ void Recolorize_ImmersiveMenuDark_PopupBorders(int* r, int* g, int* b, int* a) {
         *b = 86;
     }
 }
+
+void Recolorize_Menu_PopupSeparator11(int* r, int* g, int* b, int* a) {
+    if (*r == 215 && *g == 215 && *b == 215)
+    {
+        *r = 229;
+        *g = 229;
+        *b = 229;
+    }
+}
 #pragma endregion
 
 int RecolorizeBitmap(HBITMAP hbm, BitmapHandler handler)
@@ -194,20 +205,32 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_ LPWSTR    lpCmdLine,
     _In_ int       nCmdShow)
 {
-    NormalizeContextMenu(L"Menu", 14, Recolorize_Menu_PopupItem);
-    NormalizeContextMenu(L"Menu", 13, Recolorize_Menu_PopupGutter);
-    NormalizeContextMenu(L"Menu", 12, Recolorize_Menu_CheckBackground);
-    NormalizeContextMenu(L"Menu", 8, Recolorize_Menu_BarItem);
-    
-    NormalizeContextMenu(L"ImmersiveStart::Menu", 15, Recolorize_ImmersiveMenu_PopupSeparator);
-    NormalizeContextMenu(L"ImmersiveStart::Menu", 14, Recolorize_ImmersiveMenu_PopupItem);
-    NormalizeContextMenu(L"ImmersiveStart::Menu", 9, Recolorize_ImmersiveMenu_PopupBackground);
-    
-    NormalizeContextMenu(L"ImmersiveStartDark::Menu", 15, Recolorize_ImmersiveMenuDark_PopupSeparator);
-    NormalizeContextMenu(L"DarkMode_ImmersiveStart::Menu", 15, Recolorize_ImmersiveMenuDark_PopupSeparator);
-    NormalizeContextMenu(L"DarkMode::Menu", 15, Recolorize_ImmersiveMenuDark_PopupSeparator);
-    NormalizeContextMenu(L"DarkMode::Menu", 12, Recolorize_ImmersiveMenuDark_CheckBackground);
-    NormalizeContextMenu(L"DarkMode::Menu", 10, Recolorize_ImmersiveMenuDark_PopupBorders);
+
+    OSVERSIONINFOEX info;
+    info.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+    GetVersionEx((LPOSVERSIONINFO)&info);
+
+    if (info.dwBuildNumber < 22000)
+    {
+        NormalizeContextMenu(L"Menu", 14, Recolorize_Menu_PopupItem);
+        NormalizeContextMenu(L"Menu", 13, Recolorize_Menu_PopupGutter);
+        NormalizeContextMenu(L"Menu", 12, Recolorize_Menu_CheckBackground);
+        NormalizeContextMenu(L"Menu", 8, Recolorize_Menu_BarItem);
+
+        NormalizeContextMenu(L"ImmersiveStart::Menu", 15, Recolorize_ImmersiveMenu_PopupSeparator);
+        NormalizeContextMenu(L"ImmersiveStart::Menu", 14, Recolorize_ImmersiveMenu_PopupItem);
+        NormalizeContextMenu(L"ImmersiveStart::Menu", 9, Recolorize_ImmersiveMenu_PopupBackground);
+
+        NormalizeContextMenu(L"ImmersiveStartDark::Menu", 15, Recolorize_ImmersiveMenuDark_PopupSeparator);
+        NormalizeContextMenu(L"DarkMode_ImmersiveStart::Menu", 15, Recolorize_ImmersiveMenuDark_PopupSeparator);
+        NormalizeContextMenu(L"DarkMode::Menu", 15, Recolorize_ImmersiveMenuDark_PopupSeparator);
+        NormalizeContextMenu(L"DarkMode::Menu", 12, Recolorize_ImmersiveMenuDark_CheckBackground);
+        NormalizeContextMenu(L"DarkMode::Menu", 10, Recolorize_ImmersiveMenuDark_PopupBorders);
+    }
+    else
+    {
+        NormalizeContextMenu(L"Menu", 15, Recolorize_Menu_PopupSeparator11);
+    }
 
     return 0;
 }
