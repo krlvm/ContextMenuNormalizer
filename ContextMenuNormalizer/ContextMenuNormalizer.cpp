@@ -135,6 +135,20 @@ void Recolorize_ImmersiveMenuDark_PopupBorders(int* r, int* g, int* b, int* a) {
     }
 }
 
+
+void Recolorize_Menu_PopupItem11(int* r, int* g, int* b, int* a) {
+    if (*a == 13)
+    {
+        *a = 0;
+    }
+    else if (*r == 0 && *g == 56 && *b == 102)
+    {
+        *r = 0;
+        *g = 0;
+        *b = 0;
+        *a = 16;
+    }
+}
 void Recolorize_Menu_PopupSeparator11(int* r, int* g, int* b, int* a) {
     if (*r == 215 && *g == 215 && *b == 215)
     {
@@ -229,6 +243,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     }
     else
     {
+        NormalizeContextMenu(L"Menu", 14, Recolorize_Menu_PopupItem11);
         NormalizeContextMenu(L"Menu", 15, Recolorize_Menu_PopupSeparator11);
     }
 
