@@ -94,9 +94,12 @@ void Recolorize_Menu_BarItem(int* r, int* g, int* b, int* a) {
 }
 
 void Recolorize_ImmersiveMenu_PopupSeparator(int* r, int* g, int* b, int* a) {
-    *r = 215;
-    *g = 215;
-    *b = 215;
+    if (*r == 145 && *g == 145 && *b == 145)
+    {
+        *r = 215;
+        *g = 215;
+        *b = 215;
+    }
 }
 void Recolorize_ImmersiveMenu_PopupItem(int* r, int* g, int* b, int* a) {
     if (*r == 255 && *g == 255 && *b == 255)
