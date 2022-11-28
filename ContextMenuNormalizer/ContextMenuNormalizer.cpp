@@ -4,6 +4,9 @@
 #include <vssym32.h>
 #include <sysinfoapi.h>
 
+#include "ThemeEditor.h"
+#include "PopupMenus.h"
+
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "uxtheme.lib")
 #pragma warning(disable : 4996)
@@ -11,34 +14,6 @@
 #if _DEBUG
 #include <iostream>
 #endif
-
-#pragma region Pixel Color
-
-inline int PixClr(int val)
-{
-    return val & 0xFFFFFF;
-}
-
-inline int PixR(BYTE* pPixel)
-{
-    return PixClr(pPixel[2]);
-}
-inline int PixG(BYTE* pPixel)
-{
-    return PixClr(pPixel[1]);
-}
-inline int PixB(BYTE* pPixel)
-{
-    return PixClr(pPixel[0]);
-}
-inline int PixA(BYTE* pPixel)
-{
-    return PixClr(pPixel[3]);
-}
-
-#pragma endregion
-
-typedef void (*BitmapHandler)(int* r, int* g, int* b, int* a);
 
 #pragma region Recolorizators
 
@@ -162,61 +137,6 @@ void Recolorize_Menu_PopupSeparator11(int* r, int* g, int* b, int* a) {
 }
 #pragma endregion
 
-int RecolorizeBitmap(HBITMAP hbm, BitmapHandler handler)
-{
-    BITMAP bm;
-    GetObject(hbm, sizeof(bm), &bm);
-
-    if (!hbm || bm.bmBitsPixel != 32) {
-        return FALSE;
-    }
-
-    BYTE* pBits = new BYTE[bm.bmWidth * bm.bmHeight * 4];
-    GetBitmapBits(hbm, bm.bmWidth * bm.bmHeight * 4, pBits);
-
-    for (int y = 0; y < bm.bmHeight; y++) {
-        BYTE* pPixel = (BYTE*)pBits + bm.bmWidth * 4 * y;
-
-        for (int x = 0; x < bm.bmWidth; x++) {
-
-            int r = PixR(pPixel); // [2]
-            int g = PixG(pPixel); // [1]
-            int b = PixB(pPixel); // [0]
-            int a = PixA(pPixel); // [3]
-
-#if _DEBUG
-            _RPT1(0, "(%d, %d, %d / %d) \n", r, g, b, a);
-#endif
-
-            handler(&r, &g, &b, &a);
-
-            pPixel[2] = r;
-            pPixel[1] = g;
-            pPixel[0] = b;
-            pPixel[3] = a;
-
-            pPixel += 4;
-        }
-    }
-
-
-    SetBitmapBits(hbm, bm.bmWidth * bm.bmHeight * 4, pBits);
-
-    delete[] pBits;
-    return TRUE;
-}
-
-int NormalizeContextMenu(LPCWSTR pszClassList, int iPartId, BitmapHandler handler)
-{
-    HBITMAP hBitmap;
-
-    HTHEME hTheme = OpenThemeData(GetForegroundWindow(), pszClassList);
-    GetThemeBitmap(hTheme, iPartId, 0, TMT_DIBDATA, GBF_DIRECT, &hBitmap);
-    CloseThemeData(hTheme);
-
-    return RecolorizeBitmap(hBitmap, handler);
-}
-
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR    lpCmdLine,
@@ -226,28 +146,36 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     OSVERSIONINFOEX info;
     info.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
     GetVersionEx((LPOSVERSIONINFO)&info);
-
+    
     if (info.dwBuildNumber < 22000)
     {
-        NormalizeContextMenu(L"Menu", 14, Recolorize_Menu_PopupItem);
-        NormalizeContextMenu(L"Menu", 13, Recolorize_Menu_PopupGutter);
-        NormalizeContextMenu(L"Menu", 12, Recolorize_Menu_CheckBackground);
-        NormalizeContextMenu(L"Menu", 8, Recolorize_Menu_BarItem);
+        // Windows 10
+        NormalizeContextMenu(L"Menu", MENU_POPUPITEM, Recolorize_Menu_PopupItem);
+        NormalizeContextMenu(L"Menu", MENU_POPUPGUTTER, Recolorize_Menu_PopupGutter);
+        NormalizeContextMenu(L"Menu", MENU_POPUPCHECKBACKGROUND, Recolorize_Menu_CheckBackground);
+        NormalizeContextMenu(L"Menu", MENU_BARITEM, Recolorize_Menu_BarItem);
 
-        NormalizeContextMenu(L"ImmersiveStart::Menu", 15, Recolorize_ImmersiveMenu_PopupSeparator);
-        NormalizeContextMenu(L"ImmersiveStart::Menu", 14, Recolorize_ImmersiveMenu_PopupItem);
-        NormalizeContextMenu(L"ImmersiveStart::Menu", 9, Recolorize_ImmersiveMenu_PopupBackground);
+        NormalizeContextMenu(L"ImmersiveStart::Menu", MENU_POPUPSEPARATOR, Recolorize_ImmersiveMenu_PopupSeparator);
+        NormalizeContextMenu(L"ImmersiveStart::Menu", MENU_POPUPITEM, Recolorize_ImmersiveMenu_PopupItem);
+        NormalizeContextMenu(L"ImmersiveStart::Menu", MENU_POPUPBACKGROUND, Recolorize_ImmersiveMenu_PopupBackground);
 
-        NormalizeContextMenu(L"ImmersiveStartDark::Menu", 15, Recolorize_ImmersiveMenuDark_PopupSeparator);
-        NormalizeContextMenu(L"DarkMode_ImmersiveStart::Menu", 15, Recolorize_ImmersiveMenuDark_PopupSeparator);
-        NormalizeContextMenu(L"DarkMode::Menu", 15, Recolorize_ImmersiveMenuDark_PopupSeparator);
-        NormalizeContextMenu(L"DarkMode::Menu", 12, Recolorize_ImmersiveMenuDark_CheckBackground);
-        NormalizeContextMenu(L"DarkMode::Menu", 10, Recolorize_ImmersiveMenuDark_PopupBorders);
+        NormalizeContextMenu(L"ImmersiveStartDark::Menu", MENU_POPUPSEPARATOR, Recolorize_ImmersiveMenuDark_PopupSeparator);
+        NormalizeContextMenu(L"DarkMode_ImmersiveStart::Menu", MENU_POPUPSEPARATOR, Recolorize_ImmersiveMenuDark_PopupSeparator);
+        NormalizeContextMenu(L"DarkMode::Menu", MENU_POPUPSEPARATOR, Recolorize_ImmersiveMenuDark_PopupSeparator);
+        NormalizeContextMenu(L"DarkMode::Menu", MENU_POPUPCHECKBACKGROUND, Recolorize_ImmersiveMenuDark_CheckBackground);
+        NormalizeContextMenu(L"DarkMode::Menu", MENU_POPUPBORDERS, Recolorize_ImmersiveMenuDark_PopupBorders);
     }
-    else
+    else if (info.dwBuildNumber < 22621)
     {
-        NormalizeContextMenu(L"Menu", 14, Recolorize_Menu_PopupItem11);
-        NormalizeContextMenu(L"Menu", 15, Recolorize_Menu_PopupSeparator11);
+        // before Win11 22H2
+        NormalizeContextMenu(L"Menu", MENU_POPUPITEM, Recolorize_Menu_PopupItem11);
+        NormalizeContextMenu(L"Menu", MENU_POPUPSEPARATOR, Recolorize_Menu_PopupSeparator11);
+    }
+    else {
+        // Win11 22H2 and after
+        ModifyContextMenuBitmap(L"Menu", 27, iWin11_21H1_PopupMenu, NULL);  // The new "MENU_POPUPITEM" in use
+        ModifyContextMenuBitmap(L"Menu", MENU_POPUPITEM, iWin11_21H1_PopupMenu, NULL);
+        ModifyContextMenuBitmap(L"ImmersiveStart::Menu", MENU_POPUPITEM, iWin11_21H1_PopupMenu, NULL);
     }
 
     return 0;
