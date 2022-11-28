@@ -5,7 +5,7 @@
 #include <sysinfoapi.h>
 
 #include "ThemeEditor.h"
-#include "Win8RP.h"
+#include "PopupMenus.h"
 
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "uxtheme.lib")
@@ -137,68 +137,6 @@ void Recolorize_Menu_PopupSeparator11(int* r, int* g, int* b, int* a) {
 }
 #pragma endregion
 
-static void prvReplace(int iXPos, int iYPos, int iSize, Pixel_t xBoarder, Pixel_t xFill, Pixel_t* pPixels) {
-    Pixel_t xBackground;
-    xBackground.bits.r = 249;
-    xBackground.bits.g = 249;
-    xBackground.bits.b = 249;
-    xBackground.bits.a = 255;
-    for (int iX = iXPos; iX < iXPos + iSize; iX++) {
-        for (int iY = iYPos; iY < iYPos + iSize; iY++) {
-            if (iX == iXPos || iY == iYPos || iX == iXPos + iSize-1 || iY == iYPos + iSize-1) {
-                vSetPixel(pPixels, iX, iY, iSize, xBoarder);
-            }
-            else {
-                vSetPixel(pPixels, iX, iY, iSize, xFill);
-            }
-        }
-    }
-    //vSetPixel(pPixels, 0, 0, iSize, xBoarder);
-}
-
-int qwq(int iWidth, int iHeight, Pixel_t* pPixels, void* pParam) {
-    Pixel_t xBoarder;
-    Pixel_t xFill;
-
-    xBoarder.bits.r = 249;
-    xBoarder.bits.g = 249;
-    xBoarder.bits.b = 249;
-    xBoarder.bits.a = 255;
-
-    xFill.bits.r = 249;
-    xFill.bits.g = 249;
-    xFill.bits.b = 249;
-    xFill.bits.a = 255;
-
-    //prvReplace(0, iWidth * 0, iWidth, xBoarder, xFill, pPixels);
-    //prvReplace(0, iWidth * 2, iWidth, xBoarder, xFill, pPixels);
-
-    xBoarder.bits.r = 127;
-    xBoarder.bits.g = 181;
-    xBoarder.bits.b = 236;
-    xBoarder.bits.a = 255;
-
-    xFill.bits.r = 222;
-    xFill.bits.g = 239;
-    xFill.bits.b = 255;
-    xFill.bits.a = 255;
-
-    prvReplace(0, iWidth * 1, iWidth, xBoarder, xFill, pPixels);
-
-    xBoarder.bits.r = 181;
-    xBoarder.bits.g = 236;
-    xBoarder.bits.b = 255;
-    xBoarder.bits.a = 127;
-
-    xFill.bits.r = 222;
-    xFill.bits.g = 0;
-    xFill.bits.b = 0;
-    xFill.bits.a = 255;
-    prvReplace(0, iWidth * 3, iWidth, xBoarder, xFill, pPixels);
-
-    return 1;
-}
-
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR    lpCmdLine,
@@ -235,9 +173,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     }
     else {
         // Win11 22H2 and after
-        ModifyContextMenuBitmap(L"Menu", 27, iWin8RP_PopupMenu, NULL);  // The new "MENU_POPUPITEM" in use
-        ModifyContextMenuBitmap(L"Menu", MENU_POPUPITEM, iWin8RP_PopupMenu, NULL);
-        ModifyContextMenuBitmap(L"ImmersiveStart::Menu", MENU_POPUPITEM, iWin8RP_PopupMenu, NULL);
+        ModifyContextMenuBitmap(L"Menu", 27, iWin11_21H1_PopupMenu, NULL);  // The new "MENU_POPUPITEM" in use
+        ModifyContextMenuBitmap(L"Menu", MENU_POPUPITEM, iWin11_21H1_PopupMenu, NULL);
+        ModifyContextMenuBitmap(L"ImmersiveStart::Menu", MENU_POPUPITEM, iWin11_21H1_PopupMenu, NULL);
     }
 
     return 0;

@@ -24,6 +24,9 @@
     <ClCompile Include="Win8RP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Win11_21H1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="ContextMenuNormalizer.exe.manifest">
@@ -42,7 +45,7 @@
     <ClInclude Include="ThemeEditor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Win8RP.h">
+    <ClInclude Include="PopupMenus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

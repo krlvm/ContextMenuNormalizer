@@ -1,4 +1,4 @@
-#include "Win8RP.h"
+#include "PopupMenus.h"
 #include "ThemeEditor.h"
 
 static void prvReplace(int iXPos, int iYPos, int iSize, Pixel_t xBoarder, Pixel_t xFill, Pixel_t* pPixels) {
@@ -14,7 +14,7 @@ static void prvReplace(int iXPos, int iYPos, int iSize, Pixel_t xBoarder, Pixel_
     }
 }
 
-int iWin8RP_PopupMenu(int iWidth, int iHeight, Pixel_t* pPixels, void* pParam) {
+int iWin8_RP_PopupMenu(int iWidth, int iHeight, Pixel_t* pPixels, void* pParam) {
     Pixel_t xBoarder;
     Pixel_t xFill;
 
